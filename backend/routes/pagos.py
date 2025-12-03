@@ -46,17 +46,25 @@ def crear_preferencia():
                 })
 
         # Crear la preferencia
+        # Construir back_urls desde variable de entorno si está definida
+        base_back = os.getenv('MERCADOPAGO_BACK_URL_BASE')
+        if base_back:
+            success_url = f"{base_back}/cart?status=success"
+            failure_url = f"{base_back}/cart?status=failure"
+            pending_url = f"{base_back}/cart?status=pending"
+        else:
+            # Fallback local (útil para desarrollo), pero puede causar rechazos en MP
+            success_url = "http://localhost:4200/cart?status=success"
+            failure_url = "http://localhost:4200/cart?status=failure"
+            pending_url = "http://localhost:4200/cart?status=pending"
+
         preference_data = {
             "items": preference_items,
             "back_urls": {
-                "success": "http://localhost:4200/cart?status=success",
-                "failure": "http://localhost:4200/cart?status=failure",
-                "pending": "http://localhost:4200/cart?status=pending"
+                "success": success_url,
+                "failure": failure_url,
+                "pending": pending_url
             },
-            # Nota: no establecemos `auto_return` en desarrollo local porque
-            # Mercado Pago puede rechazar back_urls que apunten a localhost
-            # (genera 'invalid_auto_return' incluso si back_urls está presente).
-            # En producción define `auto_return: 'approved'` y usa URLs públicas.
             "external_reference": str(usuario_id)
         }
 
