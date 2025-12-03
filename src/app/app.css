@@ -1,0 +1,35 @@
+:root {
+    --header-height: 64px;
+    --footer-padding: 48px;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.main-content {
+    flex: 1;
+    width: 100%;
+    padding-top: calc(var(--header-height) + 20px);
+    padding-bottom: var(--footer-padding);
+    box-sizing: border-box;
+}
+
+/* Ensure router-outlet's direct children don't get hidden */
+.main-content > * {
+    box-sizing: border-box;
+}
+
+/* Small screens: reduce header spacing */
+@media (max-width: 768px) {
+    :root {
+        --header-height: 56px;
+        --footer-padding: 32px;
+    }
+    
+    .main-content {
+        padding-top: calc(var(--header-height) + 16px);
+    }
+}

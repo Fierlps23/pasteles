@@ -1,0 +1,74 @@
+/* Estilos para el componente Home (reemplaza utilidades Tailwind usadas en la plantilla original)
+   Mantener reglas contenedoras y responsivas. */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 5rem 1rem;
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ffecd2 100%);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.hero-title {
+  font-size: 2.75rem;
+  line-height: 1.05;
+  margin: 0 0 1rem;
+  font-weight: 800;
+  color: #2d2d2d;
+}
+
+.hero-sub {
+  font-size: 1.125rem;
+  color: #4b5563;
+  margin: 0 auto 1.5rem;
+  max-width: 760px;
+}
+
+.stats { display:flex; flex-wrap:wrap; justify-content:center; gap:1.25rem; margin:1.5rem 0 2rem; }
+.stat { background: rgba(255,255,255,0.75); backdrop-filter: blur(6px); padding:0.75rem 1rem; border-radius:0.75rem; box-shadow: 0 6px 20px rgba(0,0,0,0.06); min-width:120px; }
+.stat-num { font-size:1.5rem; font-weight:700; color:#222; }
+.stat-label { color:#6b7280; font-size:0.9rem; }
+
+.actions { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-top:0.5rem; }
+.btn { border:0; cursor:pointer; padding:0.85rem 1.25rem; border-radius:0.9rem; font-weight:700; font-size:1rem; transition:transform .18s ease, box-shadow .18s ease; }
+.btn-primary { background: linear-gradient(90deg,#ec4899,#f97316); color:white; box-shadow: 0 8px 30px rgba(249,115,22,0.15); }
+.btn-primary:hover { transform: translateY(-4px); box-shadow: 0 14px 40px rgba(0,0,0,0.12); }
+.btn-secondary { background: rgba(255,255,255,0.95); color:#db2777; border:2px solid rgba(219,39,119,0.12); }
+.btn-secondary:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
+
+.scroll-indicator { margin-top:2.5rem; opacity:0.9; animation: bounce 2s infinite; }
+.arrow { width:28px; height:28px; color:#6b7280; }
+
+.decor { position:absolute; inset:0; pointer-events:none; }
+.emoji { position:absolute; font-size:2.25rem; opacity:0.12; transform-origin:center; }
+.emoji.e1 { top:2.5rem; left:2.5rem; animation: float 3s ease-in-out infinite; }
+.emoji.e2 { top:5rem; right:4.5rem; font-size:1.9rem; animation: float 3s ease-in-out infinite; animation-delay: 1s; }
+.emoji.e3 { bottom:3.5rem; left:3.25rem; font-size:2.1rem; animation: float 3s ease-in-out infinite; animation-delay: 2s; }
+.emoji.e4 { top:50%; right:3rem; transform:translateY(-50%); font-size:1.6rem; animation: float 3s ease-in-out infinite; animation-delay: .5s; }
+
+@keyframes float { 0%,100%{ transform: translateY(0) rotate(0deg);} 50%{ transform: translateY(-12px) rotate(4deg);} }
+@keyframes bounce { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-8px);} }
+
+.gradient-text { background: linear-gradient(45deg,#ec4899,#f97316,#ec4899); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; background-size:200% 200%; animation: gradientShift 3s ease-in-out infinite; }
+@keyframes gradientShift { 0%,100%{ background-position:0% 50%; } 50%{ background-position:100% 50%; } }
+
+/* Catalog & personalizar sections */
+.catalog, .personalizar { padding:3.5rem 1rem; background: #fff; }
+.section-title { font-size:2rem; text-align:center; color:#111827; margin-bottom:1.5rem; }
+.muted { color:#6b7280; text-align:center; }
+
+/* Responsive */
+@media (min-width:768px){ .hero-title{ font-size:3.5rem;} .emoji{ opacity:0.14; } }
+@media (min-width:1024px){ .hero { padding:7rem 1rem; } .hero-title { font-size:4rem; } }
+.hero-gradient {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+}
+
+main { padding-bottom: 2rem; }

@@ -1,0 +1,89 @@
+<div class="candy-container" id="candy-container"></div>
+
+<div class="login-wrapper">
+  <div class="login-container">
+    <!-- Logo/Header -->
+    <div class="login-header">
+      <div class="logo-icon">🧁</div>
+      <h1>Dulce Tentación</h1>
+      <p class="subtitle">Pastelería Artesanal</p>
+    </div>
+
+    <!-- Formulario -->
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">
+          <span class="icon">✉️</span>
+          Correo Electrónico
+        </label>
+        <input 
+          type="email" 
+          id="email"
+          name="email"
+          class="form-control"
+          [(ngModel)]="loginData.email"
+          placeholder="tu@email.com"
+          required
+          autocomplete="email">
+        <span class="focus-border"></span>
+      </div>
+
+      <!-- Contraseña -->
+      <div class="form-group">
+        <label for="password">
+          <span class="icon">🔒</span>
+          Contraseña
+        </label>
+        <input 
+          type="password" 
+          id="password"
+          name="password"
+          class="form-control"
+          [(ngModel)]="loginData.password"
+          placeholder="••••••••"
+          required
+          autocomplete="current-password">
+        <span class="focus-border"></span>
+      </div>
+
+      <!-- Botón Submit -->
+      <button 
+        type="submit" 
+        class="btn-login"
+        [disabled]="isLoading">
+        <span class="btn-text">{{ isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}</span>
+        <span class="btn-loader" *ngIf="isLoading">⏳</span>
+      </button>
+
+      <!-- Mensaje de Error -->
+      <div class="error-message" *ngIf="errorMessage">
+        <span class="error-icon">⚠️</span>
+        <span class="error-text">{{ errorMessage }}</span>
+      </div>
+    </form>
+
+    <!-- Links Inferiores -->
+    <div class="login-footer">
+      <a class="forgot-password-link" routerLink="/forgot-password">
+        ¿Olvidaste tu contraseña?
+      </a>
+    </div>
+
+    <!-- Registro -->
+    <div class="register-section">
+      <p class="register-text">¿No tienes una cuenta?</p>
+      <a class="btn-register" routerLink="/register">
+        Crear una nueva cuenta
+      </a>
+    </div>
+
+    <!-- Botón volver al inicio -->
+    <div class="back-home"> 
+      <a class="btn-back-home" routerLink="/">← Volver al Inicio</a>
+    </div>
+  </div>
+
+  <!-- Decoración lateral -->
+  <div class="decoration"></div>
+</div>

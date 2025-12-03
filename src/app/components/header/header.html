@@ -1,0 +1,36 @@
+<header class="header" role="banner">
+  <div class="header-content">
+    <div class="logo" aria-hidden="false">
+      <h1 class="site-title">🎂 <span class="sr-only">Pastelería</span> {{ title }}</h1>
+      <!-- Mostrar saludo cuando hay usuario -->
+      <div class="user-greeting" *ngIf="authService.currentUser$ | async as user">
+        Hola, {{ user.first_name }}
+      </div>
+    </div>
+
+    <!-- Botón para pantallas pequeñas -->
+    <button class="mobile-toggle" (click)="toggleMenu()" aria-label="Abrir menú" [attr.aria-expanded]="menuOpen">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+
+    <nav class="navigation" role="navigation" aria-label="Menú principal" [class.open]="menuOpen">
+      <ul class="nav-list">
+        <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMenu()">Inicio</a></li>
+        <li><a routerLink="/productos" routerLinkActive="active" (click)="closeMenu()">Productos</a></li>
+        <li *ngIf="authService.isLoggedIn()"><a routerLink="/pedidos" routerLinkActive="active" (click)="closeMenu()">Pedidos</a></li>
+        <li *ngIf="authService.isLoggedIn()"><a routerLink="/usuarios" routerLinkActive="active" (click)="closeMenu()">Usuarios</a></li>
+        <li *ngIf="!authService.isLoggedIn()"><a routerLink="/login" routerLinkActive="active" (click)="closeMenu()">Iniciar Sesión</a></li>
+        <li *ngIf="authService.isLoggedIn()"><a href="javascript:void(0)" (click)="logout()">Cerrar Sesión</a></li>
+        <!-- Enlace al carrito con contador -->
+        <li class="cart-link"><a routerLink="/cart" (click)="closeMenu()">🛒 Carrito <span class="badge" *ngIf="cartCount$ | async as c">{{ c }}</span></a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- Utilidad para accesibilidad: texto sólo visible para lectores de pantalla -->
+<style>
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>

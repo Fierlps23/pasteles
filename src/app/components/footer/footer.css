@@ -1,0 +1,80 @@
+.fab {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    text-align: center;
+    line-height: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.fab:hover {
+    transform: translateY(-2px);
+}
+
+/* Asegurarse de que los enlaces sean clickeables */
+a {
+    cursor: pointer;
+}
+
+/* Animación suave para los enlaces */
+a {
+    transition: all 0.3s ease;
+}
+
+/* Efecto hover para los enlaces del footer */
+.hover\:text-pink-400:hover {
+    color: #f472b6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .grid-cols-1 {
+        row-gap: 2rem;
+    }
+    
+    .md\:col-span-1 {
+        margin-bottom: 2rem;
+    }
+}
+
+/* Estilos personalizados para el footer sin Tailwind */
+.site-footer {
+    background: linear-gradient(180deg,#2b2b2b,#1f1f1f);
+    color: #e6e6e6;
+    padding: 40px 0 24px;
+    font-family: inherit;
+}
+.site-footer .container{
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+.footer-grid{
+    display: grid;
+    grid-template-columns: repeat(1,1fr);
+    gap: 24px;
+}
+.brand-row{ display:flex; align-items:center; gap:10px; }
+.brand-emoji{ font-size:28px }
+.brand-name{ color:#ffb3bf; margin:0; font-size:18px }
+.brand-desc{ color:#cfcfcf; margin-top:8px; font-size:14px }
+
+.footer-links h3, .footer-contact h3, .footer-hours h3{ color:#ffb3bf; margin:0 0 8px 0; font-size:16px }
+.footer-links ul, .footer-contact ul, .footer-hours ul{ list-style:none; padding:0; margin:0; }
+.footer-links li, .footer-contact li, .footer-hours li{ margin-bottom:8px; color:#d1d1d1; font-size:14px }
+.footer-links a, .footer-policy a{ color:#d1d1d1; text-decoration:none }
+.footer-links a:hover, .footer-policy a:hover{ color:#ff9aa6 }
+
+.social{ margin-top:12px }
+.social-links a{ display:inline-block; margin-right:10px; color:#d1d1d1; text-decoration:none; font-size:18px }
+.social-links a:hover{ color:#ff9aa6 }
+
+.footer-bottom{ border-top:1px solid rgba(255,255,255,0.04); margin-top:28px; padding-top:16px; display:flex; flex-direction:column; gap:10px }
+.footer-bottom p{ margin:0; color:#bdbdbd; font-size:13px }
+.footer-policy{ display:flex; gap:12px; align-items:center }
+
+@media(min-width:700px){
+    .footer-grid{ grid-template-columns: repeat(4,1fr); }
+    .footer-bottom{ flex-direction:row; justify-content:space-between; align-items:center }
+}
+

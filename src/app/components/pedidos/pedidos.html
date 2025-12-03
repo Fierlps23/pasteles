@@ -1,0 +1,154 @@
+<section class="personalizar">
+	<div class="container">
+		<div class="custom-grid">
+			<div class="panel form-panel">
+				<h3 class="section-title">Personaliza tu <span class="gradient-text">Pastel Perfecto</span></h3>
+
+				<div class="steps">
+					<div class="step-indicators">
+						<div class="step" [class.active]="currentStep>=1">1</div>
+						<div class="connector"></div>
+						<div class="step" [class.active]="currentStep>=2">2</div>
+						<div class="connector"></div>
+						<div class="step" [class.active]="currentStep>=3">3</div>
+					</div>
+					<div class="step-title">{{ stepTitle }}</div>
+				</div>
+
+				<form (ngSubmit)="onSubmit()" #customForm="ngForm" class="custom-form">
+					<!-- Step 1: Configuración básica -->
+					<div *ngIf="currentStep===1" class="step-content">
+						<h4>🎂 Configuración Básica</h4>
+						<label>Sabor del Bizcocho</label>
+						<select [(ngModel)]="flavorPrice" name="flavor" (change)="updateCustomPrice()">
+							<option [value]="25" data-emoji="🍰">Vainilla Clásica (+$0)</option>
+							<option [value]="30" data-emoji="🍫">Chocolate Belga (+$5)</option>
+							<option [value]="35" data-emoji="🍓">Fresa Natural (+$10)</option>
+							<option [value]="40" data-emoji="❤️">Red Velvet (+$15)</option>
+							<option [value]="45" data-emoji="🥛">Tres Leches (+$20)</option>
+							<option [value]="38" data-emoji="🥕">Zanahoria Especiada (+$13)</option>
+							<option [value]="42" data-emoji="🍋">Limón Fresco (+$17)</option>
+						</select>
+
+						<label>Tamaño del Pastel</label>
+						<select [(ngModel)]="sizeMultiplier" name="size" (change)="updateCustomPrice()">
+							<option [value]="1">Pequeño (6-8 personas) - Base</option>
+							<option [value]="1.8">Mediano (12-15 personas) - +80%</option>
+							<option [value]="3">Grande (20-25 personas) - +200%</option>
+							<option [value]="4.5">Extra Grande (30-35 personas) - +350%</option>
+							<option [value]="6">Gigante (40+ personas) - +500%</option>
+						</select>
+
+						<label>Relleno Especial</label>
+						<select [(ngModel)]="fillingPrice" name="filling" (change)="updateCustomPrice()">
+							<option [value]="0">Sin relleno (+$0)</option>
+							<option [value]="8">Dulce de Leche (+$8)</option>
+							<option [value]="10">Crema Pastelera (+$10)</option>
+							<option [value]="12">Frutas Frescas (+$12)</option>
+							<option [value]="15">Chocolate Ganache (+$15)</option>
+						</select>
+
+						<label>Cobertura</label>
+						<select [(ngModel)]="coveringPrice" name="covering" (change)="updateCustomPrice()">
+							<option [value]="0">Buttercream Clásico (+$0)</option>
+							<option [value]="12">Fondant Premium (+$12)</option>
+							<option [value]="8">Crema Chantilly (+$8)</option>
+							<option [value]="15">Chocolate Espejo (+$15)</option>
+						</select>
+
+						<div class="actions-row">
+							<button type="button" (click)="nextStep()" class="btn primary">Continuar a Decoración →</button>
+						</div>
+					</div>
+
+					<!-- Step 2: Decoración y Estilo -->
+					<div *ngIf="currentStep===2" class="step-content">
+						<h4>🎨 Decoración y Estilo</h4>
+						<label>Estilo de Decoración</label>
+						<div class="decoration-grid">
+							<label *ngFor="let opt of decorationOptions" class="decoration-option">
+								<input type="radio" name="decoration" [value]="opt.price" [(ngModel)]="decorationPrice" (change)="updateCustomPrice()" />
+								<div class="dec-card">
+									<div class="emoji">{{ opt.emoji }}</div>
+									<div class="label">{{ opt.label }}</div>
+									<div class="small">+${{ opt.price }}</div>
+								</div>
+							</label>
+						</div>
+
+						<label>Elementos Decorativos</label>
+						<div class="elements-grid">
+							<label *ngFor="let e of elementOptions" class="element-option">
+								<input type="checkbox" [value]="e.key" (change)="onElementChange($event, e)" />
+								<span>{{ e.label }}</span>
+							</label>
+						</div>
+
+						<div class="actions-row">
+							<button type="button" (click)="prevStep()" class="btn">← Volver</button>
+							<button type="button" (click)="nextStep()" class="btn primary">Continuar a Detalles →</button>
+						</div>
+					</div>
+
+					<!-- Step 3: Detalles Finales -->
+					<div *ngIf="currentStep===3" class="step-content">
+						<h4>📝 Detalles Finales</h4>
+						<label>Ocasión Especial</label>
+						<select [(ngModel)]="occasion" name="occasion">
+							<option>🎂 Cumpleaños</option>
+							<option>💒 Boda</option>
+							<option>💕 Aniversario</option>
+							<option>🎓 Graduación</option>
+							<option>👶 Baby Shower</option>
+						</select>
+
+						<label>Mensaje Personalizado</label>
+						<textarea [(ngModel)]="personalMessage" name="message" maxlength="50" (input)="charCount = personalMessage.length"></textarea>
+						<div class="char-count">{{ charCount }}/50 caracteres</div>
+
+						<label>Fecha de Entrega</label>
+						<input type="date" [(ngModel)]="fecha_entrega" name="delivery" [min]="minDate" />
+
+						<label>Instrucciones Especiales</label>
+						<textarea [(ngModel)]="nota" name="notes"></textarea>
+
+						<div class="actions-row">
+							<button type="button" (click)="prevStep()" class="btn">← Volver</button>
+							<button type="submit" class="btn submit primary">🛒 Agregar al Carrito</button>
+						</div>
+					</div>
+				</form>
+			</div>
+
+			<!-- Preview and summary panel -->
+			<aside class="panel preview-panel">
+				<div class="preview-box">
+					<div class="preview-cake">{{ previewEmoji }}</div>
+					<div class="preview-decoration">{{ previewDecoration }}</div>
+					<div class="preview-desc">{{ previewDescription }}</div>
+				</div>
+
+				<div class="summary-box">
+					<h4>Resumen del Pedido</h4>
+					<div class="row"><span>Pastel base:</span><span>${{ flavorPrice }}</span></div>
+					<div class="row"><span>Tamaño:</span><span>x{{ sizeMultiplier }}</span></div>
+					<div class="row"><span>Relleno:</span><span>${{ fillingPrice }}</span></div>
+					<div class="row"><span>Cobertura:</span><span>${{ coveringPrice }}</span></div>
+					<div class="row"><span>Decoración:</span><span>${{ decorationPrice }}</span></div>
+					<div class="row"><span>Extras:</span><span>${{ extrasPrice }}</span></div>
+					<hr />
+					<div class="row total"><span>Total:</span><span>${{ customPrice }}</span></div>
+				</div>
+
+				<div class="guarantees">
+					<h5>Nuestras Garantías</h5>
+					<ul>
+						<li>Ingredientes 100% frescos</li>
+						<li>Entrega puntual</li>
+						<li>Satisfacción garantizada</li>
+					</ul>
+				</div>
+			</aside>
+		</div>
+	</div>
+</section>

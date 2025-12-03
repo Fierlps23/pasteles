@@ -1,0 +1,56 @@
+<section class="catalogo">
+	<div class="catalog-header">
+		<h3 class="title">Nuestro <span class="gradient-text">Catálogo</span></h3>
+		<p class="lead">Descubre nuestra selección de pasteles artesanales, preparados con ingredientes premium y técnicas tradicionales.</p>
+	</div>
+
+	<div class="search-wrap">
+		<input class="search-input" type="text" placeholder="Buscar pasteles, sabores, ocasiones..." [(ngModel)]="terminoBusqueda" (keyup.enter)="buscarProductos()" />
+		<button class="search-btn" (click)="buscarProductos()">Buscar</button>
+	</div>
+
+	<div class="filters">
+		<button [class.active]="categoriaSeleccionada==='all'" (click)="filtrarPorCategoria('all')">🍰 Todos los Pasteles</button>
+		<button [class.active]="categoriaSeleccionada==='chocolate'" (click)="filtrarPorCategoria('chocolate')">🍫 Chocolate</button>
+		<button [class.active]="categoriaSeleccionada==='frutas'" (click)="filtrarPorCategoria('frutas')">🍓 Frutas</button>
+		<button [class.active]="categoriaSeleccionada==='especiales'" (click)="filtrarPorCategoria('especiales')">⭐ Especiales</button>
+		<button [class.active]="categoriaSeleccionada==='cupcakes'" (click)="filtrarPorCategoria('cupcakes')">🧁 Cupcakes</button>
+		<button [class.active]="categoriaSeleccionada==='temporada'" (click)="filtrarPorCategoria('temporada')">🎃 Temporada</button>
+	</div>
+
+	<div class="result-count">Mostrando <span class="count">{{ productos.length }}</span> pasteles deliciosos</div>
+
+	<div *ngIf="cargando" class="loading">Cargando productos...</div>
+	<div *ngIf="error" class="error">{{ error }}</div>
+
+	<div class="product-grid">
+		<article class="product-card" *ngFor="let producto of productos">
+			<div class="card-hero">
+				<img [src]="getImageUrl(producto)" alt="{{ producto.nombre }}" (error)="onImgError($event)">
+			</div>
+			<!-- Overlay que aparece al pasar el ratón sobre la imagen -->
+			<div class="overlay" aria-hidden="true">
+				<div class="overlay-content">
+						<h5 class="ov-title">{{ producto.nombre }}</h5>
+						<p class="ov-desc">{{ producto.descripcion || 'Descripción no disponible' }}</p>
+				</div>
+			</div>
+			<div class="card-body">
+				<h4 class="product-title">{{ producto.nombre }}</h4>
+				<p class="product-desc">{{ producto.descripcion }}</p>
+				<div class="product-meta">
+					<span class="price">${{ producto.precio }}</span>
+						</div>
+				<button class="add-cart" (click)="addToCart(producto)">🛒 Agregar al Carrito</button>
+			</div>
+		</article>
+	</div>
+
+	<div class="catalog-cta">
+		<div class="cta-box">
+			<h4>¿No encuentras lo que buscas?</h4>
+			<p>Creamos pasteles personalizados para cualquier ocasión especial.</p>
+			<button class="cta-btn" (click)="scrollToSection('personalizar')">🎨 Personalizar mi Pastel</button>
+		</div>
+	</div>
+</section>

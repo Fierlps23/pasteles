@@ -1,0 +1,44 @@
+/* Estilos para el personalizador de pedidos */
+.personalizar { padding:2rem 1rem; }
+.container { max-width:1200px; margin:0 auto; }
+.custom-grid { display:grid; grid-template-columns:1fr; gap:1.5rem; }
+.panel { background:#fff; border-radius:16px; padding:1.25rem; box-shadow:0 10px 30px rgba(0,0,0,0.06); }
+.form-panel { order:1; }
+.preview-panel { order:2; }
+
+.section-title { font-size:1.5rem; font-weight:800; margin-bottom:1rem; }
+.gradient-text { background:linear-gradient(45deg,#ec4899,#f97316); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+
+.steps { margin-bottom:1rem; }
+.step-indicators { display:flex; align-items:center; gap:.5rem; margin-bottom:.5rem; }
+.step { width:42px; height:42px; border-radius:999px; display:flex; align-items:center; justify-content:center; background:#e5e7eb; color:#6b7280; font-weight:700; }
+.step.active { background:linear-gradient(90deg,#ec4899,#f97316); color:#fff; }
+.connector { height:6px; background:#e5e7eb; flex:1; border-radius:6px; }
+.step-title { font-weight:700; color:#374151; }
+
+.custom-form label { display:block; margin-top:0.75rem; font-weight:700; color:#374151; }
+.custom-form select, .custom-form input[type="date"], .custom-form textarea { width:100%; padding:0.6rem 0.8rem; border-radius:10px; border:1px solid #e5e7eb; margin-top:.35rem; }
+.actions-row { display:flex; gap:.75rem; margin-top:1rem; }
+.btn { padding:.8rem 1rem; border-radius:10px; border:0; cursor:pointer; }
+.btn.primary { background:linear-gradient(90deg,#ec4899,#f97316); color:#fff; }
+
+.decoration-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:.75rem; margin-top:.5rem; }
+.dec-card { padding:.75rem; border:1px solid #e5e7eb; border-radius:10px; text-align:center; }
+.emoji { font-size:1.5rem; }
+
+.elements-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:.5rem; }
+.element-option { display:flex; align-items:center; gap:.5rem; }
+
+.preview-box { text-align:center; }
+.preview-cake { font-size:4rem; }
+.preview-decoration { font-size:1.5rem; margin-top:.5rem; }
+.preview-desc { margin-top:.5rem; color:#6b7280; font-weight:700; }
+
+.summary-box { background:linear-gradient(90deg,#fff,#fff); padding:1rem; border-radius:10px; margin-top:1rem; }
+.summary-box .row { display:flex; justify-content:space-between; margin:6px 0; }
+.summary-box .total { font-size:1.25rem; color:#ec4899; font-weight:900; }
+
+.guarantees { margin-top:1rem; }
+.guarantees ul { padding-left:1rem; color:#374151; }
+
+@media(min-width:992px){ .custom-grid{ grid-template-columns: 2fr 1fr; } .form-panel{ order:1 } .preview-panel{ order:2 } }

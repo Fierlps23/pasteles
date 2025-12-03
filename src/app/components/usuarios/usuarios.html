@@ -1,0 +1,170 @@
+<section id="usuario" class="user-section">
+	<div class="container">
+		<!-- Header del perfil -->
+		<div class="profile-header">
+			<div class="avatar">
+				<div class="initials">{{ user.initials }}</div>
+				<button class="edit-avatar" title="Editar avatar">✏️</button>
+			</div>
+			<h2 class="user-name">¡Hola, {{ user.name }}! 👋</h2>
+			<p class="muted">Cliente VIP desde {{ user.vipSince }}</p>
+			<div class="badges">
+				<span class="vip">⭐ Cliente VIP</span>
+				<span class="orders">🎂 {{ user.orders }} Pedidos Completados</span>
+			</div>
+		</div>
+
+		<!-- Tabs -->
+		<div class="tabs">
+			<div class="tabs-inner">
+				<button class="tab-btn" [class.active]="currentTab==='dashboard'" (click)="showTab('dashboard', $event)">📊 Dashboard</button>
+				<button class="tab-btn" [class.active]="currentTab==='pedidos'" (click)="showTab('pedidos', $event)">📋 Mis Pedidos</button>
+				<button class="tab-btn" [class.active]="currentTab==='favoritos'" (click)="showTab('favoritos', $event)" *ngIf="!isAdmin">❤️ Favoritos</button>
+				<button class="tab-btn" [class.active]="currentTab==='direcciones'" (click)="showTab('direcciones', $event)" *ngIf="!isAdmin">📍 Direcciones</button>
+				<button class="tab-btn" [class.active]="currentTab==='usuarios'" (click)="showTab('usuarios', $event)" *ngIf="isAdmin">👥 Gestión Usuarios</button>
+				<button class="tab-btn" [class.active]="currentTab==='reportes'" (click)="showTab('reportes', $event)" *ngIf="isAdmin">📈 Reportes</button>
+				<button class="tab-btn" [class.active]="currentTab==='configuracion'" (click)="showTab('configuracion', $event)">⚙️ Configuración</button>
+			</div>
+		</div>
+
+		<!-- Dashboard -->
+		<div *ngIf="currentTab==='dashboard'" class="tab-content dashboard">
+			<div class="stats-grid">
+				<div class="stat-card">
+					<div class="icon">🛒</div>
+					<div class="value">{{ user.orders }}</div>
+					<div class="label">Pedidos Totales</div>
+				</div>
+				<div class="stat-card">
+					<div class="icon">💰</div>
+					<div class="value">${{ user.spent }}</div>
+					<div class="label">Total Gastado</div>
+				</div>
+				<div class="stat-card">
+					<div class="icon">⭐</div>
+					<div class="value">{{ user.rating }}</div>
+					<div class="label">Calificación Promedio</div>
+				</div>
+				<div class="stat-card">
+					<div class="icon">🎁</div>
+					<div class="value">{{ user.points }}</div>
+					<div class="label">Puntos Acumulados</div>
+				</div>
+			</div>
+
+			<div class="grid two-col">
+				<div class="card recent-orders">
+					<h3>📋 Pedidos Recientes</h3>
+					<div *ngFor="let o of recentOrders" class="order-item">
+						<div class="left">
+							<div class="emoji">🍰</div>
+							<div>
+								<div class="title">{{ o.title }}</div>
+								<div class="muted">{{ o.date }}</div>
+							</div>
+						</div>
+						<div class="right">
+							<div class="status">{{ o.status }}</div>
+							<div class="price">${{ o.price }}</div>
+						</div>
+					</div>
+					<button class="link">Ver todos los pedidos →</button>
+				</div>
+
+				<div class="card special-dates">
+					<h3>🎉 Fechas Especiales</h3>
+					<div class="special-item">
+						<div class="title">Cumpleaños de Carlos</div>
+						<div class="muted">25 de Diciembre, 2024 — En 12 días</div>
+						<button class="btn primary">Ordenar Pastel</button>
+					</div>
+					<button class="link dashed">+ Agregar Fecha Especial</button>
+				</div>
+			</div>
+
+			<div class="recommendations">
+				<h3>🎯 Recomendado Para Ti</h3>
+				<div class="rec-grid">
+					<div class="rec-card" *ngFor="let f of favorites">
+						<div class="emoji">{{ f.emoji }}</div>
+						<div class="name">{{ f.name }}</div>
+						<div class="price">${{ f.price }}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Pedidos Tab -->
+		<div *ngIf="currentTab==='pedidos'" class="tab-content">
+			<div class="card">
+				<h3>Historial de Pedidos</h3>
+				<div *ngFor="let o of recentOrders" class="order-card">
+					<div class="order-left">
+						<div class="emoji">🍰</div>
+						<div>
+							<div class="font-semibold">Pedido • {{ o.title }}</div>
+							<div class="muted">{{ o.date }}</div>
+						</div>
+					</div>
+					<div class="order-right">
+						<div class="price">${{ o.price }}</div>
+						<button class="link">Ver detalles</button>
+					</div>
+				</div>
+				<div class="text-center"><button class="btn">Cargar más pedidos</button></div>
+			</div>
+		</div>
+
+		<!-- Favoritos Tab -->
+		<div *ngIf="currentTab==='favoritos'" class="tab-content">
+			<div class="card grid-fav">
+				<div *ngFor="let f of favorites" class="fav-item">
+					<div class="emoji">{{ f.emoji }}</div>
+					<div class="name">{{ f.name }}</div>
+					<div class="price">${{ f.price }}</div>
+					<div class="fav-actions"><button class="btn primary">Ordenar</button><button class="btn muted">💔</button></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Direcciones Tab -->
+		<div *ngIf="currentTab==='direcciones'" class="tab-content">
+			<div class="card">
+				<h3>📍 Mis Direcciones</h3>
+				<div *ngFor="let d of addresses" class="address-item">
+					<div class="address-left">
+						<div class="badge">{{ d.label }}</div>
+						<div class="title">{{ d.title }}</div>
+						<div class="muted">{{ d.street }}</div>
+						<div class="muted">CP: {{ d.zip }}</div>
+						<div class="muted">📞 {{ d.phone }}</div>
+					</div>
+					<div class="address-actions"><button class="btn">Editar</button><button class="btn danger">Eliminar</button></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Configuración Tab -->
+		<div *ngIf="currentTab==='configuracion'" class="tab-content">
+			<div class="grid two-col">
+				<div class="card">
+					<h3>👤 Información Personal</h3>
+					<form class="profile-form" (ngSubmit)="saveProfile()">
+						<label>Nombre Completo</label>
+						<input [(ngModel)]="user.name" name="name" required />
+						<label>Email</label>
+						<input [(ngModel)]="userEmail" name="email" type="email" required />
+						<button type="submit" class="btn primary">Guardar Cambios</button>
+					</form>
+				</div>
+
+				<div class="card">
+					<h3>⚙️ Preferencias</h3>
+					<div class="preference"><label>Notificaciones por Email</label><input type="checkbox" [(ngModel)]="settings.emailNotifications" name="emailNot" /></div>
+					<div class="preference"><label>Recordatorios de Fechas</label><input type="checkbox" [(ngModel)]="settings.reminders" name="reminders" /></div>
+					<div class="preference"><label>SMS de Entrega</label><input type="checkbox" [(ngModel)]="settings.sms" name="sms" /></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

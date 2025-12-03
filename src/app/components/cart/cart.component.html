@@ -1,0 +1,52 @@
+<div class="cart-container">
+  <h2>🛒 Carrito de Compras</h2>
+  
+  <div *ngIf="(cart$ | async)?.length === 0" class="empty-cart">
+    <p>Tu carrito está vacío</p>
+    <button (click)="continueShopping()" class="continue-shopping">Continuar Comprando</button>
+  </div>
+
+  <div *ngIf="(cart$ | async)?.length > 0" class="cart-items">
+    <div *ngFor="let item of cart$ | async" class="cart-item">
+      <div class="item-image" *ngIf="item.image">
+        <img [src]="item.image" [alt]="item.name">
+      </div>
+      <div class="item-details">
+        <h3>{{ item.name }}</h3>
+        <p *ngIf="item.description">{{ item.description }}</p>
+        <p class="price">${{ item.price }}</p>
+      </div>
+      <div class="item-quantity">
+        <button (click)="updateQuantity(item.id, item.quantity - 1)" class="quantity-btn">-</button>
+        <input type="number" [value]="item.quantity" 
+               (change)="updateQuantity(item.id, $any($event.target).value)"
+               min="1" class="quantity-input">
+        <button (click)="updateQuantity(item.id, item.quantity + 1)" class="quantity-btn">+</button>
+      </div>
+      <div class="item-total">
+        ${{ item.price * item.quantity }}
+      </div>
+      <button (click)="removeItem(item.id)" class="remove-btn">🗑️</button>
+    </div>
+
+    <div class="cart-summary">
+      <div class="summary-row">
+        <span>Subtotal:</span>
+        <span>${{ total$ | async }}</span>
+      </div>
+      <div class="summary-row">
+        <span>IVA (16%):</span>
+        <span>${{ (total$ | async) * 0.16 | number:'1.2-2' }}</span>
+      </div>
+      <div class="summary-row total">
+        <span>Total:</span>
+        <span>${{ (total$ | async) * 1.16 | number:'1.2-2' }}</span>
+      </div>
+      
+      <div class="cart-actions">
+        <button (click)="clearCart()" class="clear-cart">Vaciar Carrito</button>
+        <button (click)="checkout()" class="checkout">Proceder al Pago</button>
+      </div>
+    </div>
+  </div>
+</div>
