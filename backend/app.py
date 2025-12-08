@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory, abort
 from flask_cors import CORS
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -16,14 +16,90 @@ CORS(app)  # Esto permite las solicitudes CORS desde el frontend
 
 # Configuración de la base de datos usando variables de entorno (más seguro)
 import os
-DB_USER = os.getenv('DB_USER', 'root')
-DB_PASS = os.getenv('DB_PASS', '')  # si usas XAMPP suele estar vacío
-DB_HOST = os.getenv('DB_HOST', 'localhost')
-DB_NAME = os.getenv('DB_NAME', 'pasteleria_db')
+import urllib.parse
 
-# Usamos el conector mysql-connector-python con SQLAlchemy: mysql+mysqlconnector://
-app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+mysqlconnector://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
+# 1) If the full SQLALCHEMY_DATABASE_URI is provided, use it directly.
+sql_uri = os.getenv('SQLALCHEMY_DATABASE_URI')
+
+# 2) Railway / providers often expose a MYSQL_URL or MYSQL_PUBLIC_URL like:
+#    mysql://user:pass@host:3306/database
+#    Convert it to the SQLAlchemy format with the mysqlconnector dialect.
+if not sql_uri:
+    # prefer public/private url variants that Railway exposes
+    mysql_url = (
+        os.getenv('MYSQL_URL')
+        or os.getenv('MYSQL_PUBLIC_URL')
+        or os.getenv('MYSQL_PUBLIC_URL')
+        or os.getenv('MYSQL_URL')
+        or os.getenv('DATABASE_URL')
+        or os.getenv('MYSQL_DATABASE_URL')
+    )
+    if mysql_url:
+        # If scheme is plain mysql://, switch to mysql+mysqlconnector://
+        if mysql_url.startswith('mysql://'):
+            sql_uri = mysql_url.replace('mysql://', 'mysql+mysqlconnector://', 1)
+        else:
+            sql_uri = mysql_url
+
+# 3) Fallback: build URI from individual env vars (support many common names)
+if not sql_uri:
+    DB_USER = (
+        os.getenv('MYSQLUSER')
+        or os.getenv('MYSQL_USER')
+        or os.getenv('MYSQLUSER')
+        or os.getenv('DB_USER')
+        or 'root'
+    )
+    DB_PASS = (
+        os.getenv('MYSQLPASSWORD')
+        or os.getenv('MYSQL_PASSWORD')
+        or os.getenv('MYSQL_ROOT_PASSWORD')
+        or os.getenv('DB_PASS')
+        or ''
+    )
+    DB_HOST = (
+        os.getenv('MYSQLHOST')
+        or os.getenv('MYSQL_HOST')
+        or os.getenv('DB_HOST')
+        or 'localhost'
+    )
+    DB_PORT = (
+        os.getenv('MYSQLPORT')
+        or os.getenv('MYSQL_PORT')
+        or os.getenv('DB_PORT')
+        or '3306'
+    )
+    DB_NAME = (
+        os.getenv('MYSQLDATABASE')
+        or os.getenv('MYSQL_DATABASE')
+        or os.getenv('DB_NAME')
+        or 'satisfied-respect'
+    )
+
+    # URL-encode credentials
+    user_q = urllib.parse.quote_plus(DB_USER)
+    pass_q = urllib.parse.quote_plus(DB_PASS)
+
+    sql_uri = f"mysql+mysqlconnector://{user_q}:{pass_q}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+
+app.config['SQLALCHEMY_DATABASE_URI'] = sql_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Log the DB URI in masked form so you can verify which variables were picked
+def _mask_uri(uri: str) -> str:
+    try:
+        # mask password between : and @
+        before, rest = uri.split('://', 1)
+        userinfo, hostpart = rest.split('@', 1)
+        if ':' in userinfo:
+            user, _ = userinfo.split(':', 1)
+            return f"{before}://{user}:*****@{hostpart}"
+    except Exception:
+        pass
+    return uri
+
+masked = _mask_uri(app.config.get('SQLALCHEMY_DATABASE_URI', ''))
+app.logger.info(f"Using database uri: {masked}")
 
 # Nota: instala 'mysql-connector-python' o instala 'pymysql' y usa pymysql.install_as_MySQLdb()
 
@@ -379,6 +455,24 @@ def crear_pedido():
 # Registrar los blueprints
 app.register_blueprint(carrito_bp, url_prefix='/api')
 app.register_blueprint(pagos_bp, url_prefix='/api')
+
+
+# Servir videos/assets desde el backend si están disponibles.
+# Primero busca en `backend/static/videos`, luego intenta `../src/assets/videos` (útil en desarrollo)
+@app.route('/assets/videos/<path:filename>')
+def serve_video_asset(filename: str):
+    # rutas a probar
+    backend_videos = os.path.join(app.root_path, 'static', 'videos')
+    frontend_videos = os.path.join(app.root_path, '..', 'src', 'assets', 'videos')
+
+    candidate_paths = [backend_videos, frontend_videos]
+    for p in candidate_paths:
+        full = os.path.join(p, filename)
+        if os.path.exists(full):
+            return send_from_directory(p, filename)
+
+    # Si no se encuentra, devolver 404
+    return abort(404)
 
 if __name__ == '__main__':
     with app.app_context():
