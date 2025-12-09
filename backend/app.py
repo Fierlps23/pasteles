@@ -16,13 +16,48 @@ CORS(app)  # Esto permite las solicitudes CORS desde el frontend
 
 # Configuración de la base de datos usando variables de entorno (más seguro)
 import os
-DB_USER = os.getenv('DB_USER', 'root')
-DB_PASS = os.getenv('DB_PASS', 'HBxkhSSKMDivRSTwDpzMlupGCZofbljA')  # si usas XAMPP suele estar vacío
-DB_HOST = os.getenv('DB_HOST', 'mysql.railway.internal')
-DB_NAME = os.getenv('DB_NAME', 'satisfied-respect')
+from urllib.parse import urlparse, unquote
+
+# Leer variables de entorno con varias alternativas para compatibilidad con deploys
+DB_USER = os.getenv('DB_USER') or os.getenv('MYSQLUSER') or os.getenv('MYSQL_USER')
+DB_PASS = os.getenv('DB_PASS') or os.getenv('MYSQLPASSWORD') or os.getenv('MYSQL_PASSWORD')
+DB_HOST = os.getenv('DB_HOST') or os.getenv('MYSQLHOST') or os.getenv('MYSQL_HOST')
+DB_NAME = os.getenv('DB_NAME') or os.getenv('MYSQLDATABASE') or os.getenv('MYSQL_DATABASE')
+DB_PORT = os.getenv('DB_PORT') or os.getenv('MYSQLPORT') or os.getenv('MYSQL_PORT')
+
+# Si no tenemos todas las piezas, intentar parsear una URL completa (p. ej. MYSQL_PUBLIC_URL o DATABASE_URL)
+def _parse_mysql_url(url: str):
+    p = urlparse(url)
+    user = unquote(p.username) if p.username else None
+    password = unquote(p.password) if p.password else None
+    host = p.hostname
+    port = p.port
+    dbname = p.path.lstrip('/') if p.path else None
+    return user, password, host, port, dbname
+
+if not (DB_USER and DB_PASS and DB_HOST and DB_NAME):
+    mysql_url = os.getenv('MYSQL_PUBLIC_URL') or os.getenv('MYSQL_URL') or os.getenv('DATABASE_URL')
+    if mysql_url:
+        uuser, upass, uhost, uport, udbname = _parse_mysql_url(mysql_url)
+        DB_USER = DB_USER or uuser
+        DB_PASS = DB_PASS or upass
+        DB_HOST = DB_HOST or uhost
+        DB_PORT = DB_PORT or (str(uport) if uport else None)
+        DB_NAME = DB_NAME or udbname
+
+# Validar que tengamos al menos host/user/pass/name; si no, dejamos valores por defecto seguros
+if not DB_USER:
+    DB_USER = 'root'
+if not DB_PASS:
+    DB_PASS = ''
+if not DB_HOST:
+    DB_HOST = 'localhost'
+if not DB_NAME:
+    DB_NAME = 'pasteleria_db'
 
 # Usamos el conector mysql-connector-python con SQLAlchemy: mysql+mysqlconnector://
-app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+mysqlconnector://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
+hostport = f"{DB_HOST}:{DB_PORT}" if DB_PORT else DB_HOST
+app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+mysqlconnector://{DB_USER}:{DB_PASS}@{hostport}/{DB_NAME}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Nota: instala 'mysql-connector-python' o instala 'pymysql' y usa pymysql.install_as_MySQLdb()
