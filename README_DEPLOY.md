@@ -30,18 +30,3 @@ Paso rápido para poner tu proyecto en Internet usando Vercel (frontend) y Rende
 Notas
  - No incluyas tokens en el repo. Usa variables de entorno en los dashboards.
  - Si quieres, puedo crear un pequeño script de deploy o un `Dockerfile`.
-
-Railway (nota rápida)
---------------------
-
-- Si usas Railway, crea primero el servicio MySQL (plugin). En la pantalla del plugin
-	Railway mostrará variables como `MYSQL_URL`, `MYSQL_PUBLIC_URL`, `MYSQLPASSWORD`, `MYSQLUSER`, etc.
-- Abre tu *Web Service* (el servicio que ejecuta el backend) → Settings → Environment.
-	- Añade una **Variable Reference** apuntando a `MYSQL_URL` o copia el valor a una variable
-		del Web Service llamada `MYSQL_URL` (recomendado: Variable Reference para mantenerlo secreto).
-	- Alternativamente puedes añadir `SQLALCHEMY_DATABASE_URI` con el valor `mysql+mysqlconnector://user:pass@host:port/db`.
-
-- En el repo existe `backend/.env.example` con los nombres de variables recomendadas.
-	Copia ese archivo a `backend/.env` para pruebas locales (no subas `.env` al repo).
-
-Si quieres, te guío paso a paso en la UI de Railway para añadir la Variable Reference.
