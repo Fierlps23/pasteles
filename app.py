@@ -1,10 +1,10 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory, abort
 from flask_cors import CORS
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
 import hashlib
-from models import db, Producto, CarritoItem
+from models import db, Producto, CarritoItem, PreferenciaPago
 from routes.carrito import carrito_bp
 from routes.pagos import pagos_bp
 
@@ -16,9 +16,14 @@ CORS(app)  # Esto permite las solicitudes CORS desde el frontend
 
 # Configuración de la base de datos usando variables de entorno (más seguro)
 import os
+# DB_USER = os.getenv('DB_USER', 'root')
+# DB_PASS = os.getenv('DB_PASS', '')  # si usas XAMPP suele estar vacío
+# DB_HOST = os.getenv('DB_HOST', 'localhost')
+# DB_NAME = os.getenv('DB_NAME', 'pasteleria_db')
+
 DB_USER = os.getenv('DB_USER', 'root')
-DB_PASS = os.getenv('DB_PASS', '')  # si usas XAMPP suele estar vacío
-DB_HOST = os.getenv('DB_HOST', 'localhost')
+DB_PASS = os.getenv('DB_PASS', 'HBxkhSSKMDivRSTwDpzMlupGCZofbljA')  # si usas XAMPP suele estar vacío
+DB_HOST = os.getenv('DB_HOST', 'shuttle.proxy.rlwy.net:36862')
 DB_NAME = os.getenv('DB_NAME', 'pasteleria_db')
 
 # Usamos el conector mysql-connector-python con SQLAlchemy: mysql+mysqlconnector://
@@ -318,29 +323,7 @@ def verify_user():
     return jsonify({'error': 'invalid token'}), 400
 
 
-@app.route('/api/users/login', methods=['POST'])
-def login_user():
-    data = request.get_json() or {}
-    email = (data.get('email') or '').strip().lower()
-    password = data.get('password')
-    if not email or not password:
-        return jsonify({'error': 'email and password required'}), 400
 
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        return jsonify({'error': 'invalid credentials'}), 401
-
-    if not user.check_password(password):
-        user.failed_login_attempts = (user.failed_login_attempts or 0) + 1
-        db.session.commit()
-        return jsonify({'error': 'invalid credentials'}), 401
-
-    # login exitoso
-    user.last_login_at = datetime.utcnow()
-    user.failed_login_attempts = 0
-    db.session.commit()
-
-    return jsonify({'message': 'login successful', 'user': {'id': user.id, 'email': user.email, 'first_name': user.first_name, 'role': user.role}}), 200
 
 
 @app.route('/api/pedidos', methods=['POST'])
@@ -379,6 +362,24 @@ def crear_pedido():
 # Registrar los blueprints
 app.register_blueprint(carrito_bp, url_prefix='/api')
 app.register_blueprint(pagos_bp, url_prefix='/api')
+
+
+# Servir videos/assets desde el backend si están disponibles.
+# Primero busca en `backend/static/videos`, luego intenta `../src/assets/videos` (útil en desarrollo)
+@app.route('/assets/videos/<path:filename>')
+def serve_video_asset(filename: str):
+    # rutas a probar
+    backend_videos = os.path.join(app.root_path, 'static', 'videos')
+    frontend_videos = os.path.join(app.root_path, '..', 'src', 'assets', 'videos')
+
+    candidate_paths = [backend_videos, frontend_videos]
+    for p in candidate_paths:
+        full = os.path.join(p, filename)
+        if os.path.exists(full):
+            return send_from_directory(p, filename)
+
+    # Si no se encuentra, devolver 404
+    return abort(404)
 
 if __name__ == '__main__':
     with app.app_context():
