@@ -1,6 +1,11 @@
 <main>
-  <!-- Hero Section mejorado (plantilla limpia para Angular) -->
   <section id="inicio" class="hero">
+
+    <!-- VIDEO DE FONDO -->
+    <video autoplay muted loop playsinline class="hero-video">
+      <source src="/src/assets/videos/fondo.mp4" type="video/mp4">
+    </video>
+
     <!-- Elementos decorativos flotantes -->
     <div class="decor">
       <span class="emoji e1">🎂</span>
@@ -9,27 +14,39 @@
       <span class="emoji e4">🍰</span>
     </div>
 
+    <!-- Contenido -->
     <div class="container hero-content">
       <h1 class="hero-title">Los Pasteles Más <span class="gradient-text">Deliciosos</span></h1>
-      <p class="hero-sub">Creamos momentos dulces para tus celebraciones especiales con ingredientes frescos, recetas tradicionales y el cariño de generaciones de pasteleros.</p>
 
+      <p class="hero-sub">
+        Creamos momentos dulces para tus celebraciones especiales con ingredientes frescos,
+        recetas tradicionales y el cariño de generaciones de pasteleros.
+      </p>
+
+      <!-- Stats -->
       <div class="stats">
         <div class="stat"><div class="stat-num">500+</div><div class="stat-label">Clientes Felices</div></div>
         <div class="stat"><div class="stat-num">50+</div><div class="stat-label">Sabores Únicos</div></div>
         <div class="stat"><div class="stat-num">24h</div><div class="stat-label">Entrega Rápida</div></div>
       </div>
 
+      <!-- Botones -->
       <div class="actions">
         <button class="btn btn-primary" (click)="scrollToSection('catalogo')">🍰 Ver Catálogo</button>
         <button class="btn btn-secondary" (click)="scrollToSection('personalizar')">🎨 Personalizar Pastel</button>
       </div>
 
+      <!-- Flecha -->
       <div class="scroll-indicator" aria-hidden>
-        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+        </svg>
       </div>
     </div>
   </section>
 
+  <!-- CATÁLOGO -->
   <section id="catalogo" class="catalog">
     <div class="container">
       <h3 class="section-title">Nuestro Catálogo</h3>
@@ -37,6 +54,7 @@
     </div>
   </section>
 
+  <!-- PERSONALIZAR -->
   <section id="personalizar" class="personalizar">
     <div class="container">
       <h3 class="section-title">Personaliza tu Pastel</h3>
@@ -44,7 +62,3 @@
     </div>
   </section>
 </main>
-
-  
-
-

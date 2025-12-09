@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
 import hashlib
-from models import db, Producto, CarritoItem
+from models import db, Producto, CarritoItem, PreferenciaPago
 from routes.carrito import carrito_bp
 from routes.pagos import pagos_bp
 
@@ -16,48 +16,18 @@ CORS(app)  # Esto permite las solicitudes CORS desde el frontend
 
 # Configuración de la base de datos usando variables de entorno (más seguro)
 import os
-from urllib.parse import urlparse, unquote
+# DB_USER = os.getenv('DB_USER', 'root')
+# DB_PASS = os.getenv('DB_PASS', '')  # si usas XAMPP suele estar vacío
+# DB_HOST = os.getenv('DB_HOST', 'localhost')
+# DB_NAME = os.getenv('DB_NAME', 'pasteleria_db')
 
-# Leer variables de entorno con varias alternativas para compatibilidad con deploys
-DB_USER = os.getenv('DB_USER') or os.getenv('MYSQLUSER') or os.getenv('MYSQL_USER')
-DB_PASS = os.getenv('DB_PASS') or os.getenv('MYSQLPASSWORD') or os.getenv('MYSQL_PASSWORD')
-DB_HOST = os.getenv('DB_HOST') or os.getenv('MYSQLHOST') or os.getenv('MYSQL_HOST')
-DB_NAME = os.getenv('DB_NAME') or os.getenv('MYSQLDATABASE') or os.getenv('MYSQL_DATABASE')
-DB_PORT = os.getenv('DB_PORT') or os.getenv('MYSQLPORT') or os.getenv('MYSQL_PORT')
-
-# Si no tenemos todas las piezas, intentar parsear una URL completa (p. ej. MYSQL_PUBLIC_URL o DATABASE_URL)
-def _parse_mysql_url(url: str):
-    p = urlparse(url)
-    user = unquote(p.username) if p.username else None
-    password = unquote(p.password) if p.password else None
-    host = p.hostname
-    port = p.port
-    dbname = p.path.lstrip('/') if p.path else None
-    return user, password, host, port, dbname
-
-if not (DB_USER and DB_PASS and DB_HOST and DB_NAME):
-    mysql_url = os.getenv('MYSQL_PUBLIC_URL') or os.getenv('MYSQL_URL') or os.getenv('DATABASE_URL')
-    if mysql_url:
-        uuser, upass, uhost, uport, udbname = _parse_mysql_url(mysql_url)
-        DB_USER = DB_USER or uuser
-        DB_PASS = DB_PASS or upass
-        DB_HOST = DB_HOST or uhost
-        DB_PORT = DB_PORT or (str(uport) if uport else None)
-        DB_NAME = DB_NAME or udbname
-
-# Validar que tengamos al menos host/user/pass/name; si no, dejamos valores por defecto seguros
-if not DB_USER:
-    DB_USER = 'root'
-if not DB_PASS:
-    DB_PASS = ''
-if not DB_HOST:
-    DB_HOST = 'localhost'
-if not DB_NAME:
-    DB_NAME = 'pasteleria_db'
+DB_USER = os.getenv('DB_USER', 'root')
+DB_PASS = os.getenv('DB_PASS', 'HBxkhSSKMDivRSTwDpzMlupGCZofbljA')  # si usas XAMPP suele estar vacío
+DB_HOST = os.getenv('DB_HOST', 'shuttle.proxy.rlwy.net:36862')
+DB_NAME = os.getenv('DB_NAME', 'pasteleria_db')
 
 # Usamos el conector mysql-connector-python con SQLAlchemy: mysql+mysqlconnector://
-hostport = f"{DB_HOST}:{DB_PORT}" if DB_PORT else DB_HOST
-app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+mysqlconnector://{DB_USER}:{DB_PASS}@{hostport}/{DB_NAME}"
+app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+mysqlconnector://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Nota: instala 'mysql-connector-python' o instala 'pymysql' y usa pymysql.install_as_MySQLdb()
@@ -353,29 +323,7 @@ def verify_user():
     return jsonify({'error': 'invalid token'}), 400
 
 
-@app.route('/api/users/login', methods=['POST'])
-def login_user():
-    data = request.get_json() or {}
-    email = (data.get('email') or '').strip().lower()
-    password = data.get('password')
-    if not email or not password:
-        return jsonify({'error': 'email and password required'}), 400
 
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        return jsonify({'error': 'invalid credentials'}), 401
-
-    if not user.check_password(password):
-        user.failed_login_attempts = (user.failed_login_attempts or 0) + 1
-        db.session.commit()
-        return jsonify({'error': 'invalid credentials'}), 401
-
-    # login exitoso
-    user.last_login_at = datetime.utcnow()
-    user.failed_login_attempts = 0
-    db.session.commit()
-
-    return jsonify({'message': 'login successful', 'user': {'id': user.id, 'email': user.email, 'first_name': user.first_name, 'role': user.role}}), 200
 
 
 @app.route('/api/pedidos', methods=['POST'])
